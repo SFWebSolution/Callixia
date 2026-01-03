@@ -24,19 +24,27 @@ const showMessage = (msg, success=true) => {
 window.signup = async () => {
   try {
     const uname = username.value.trim();
-    const q = query(collection(db, "users"), where("username", "==", uname));
-    const snap = await getDocs(q);
-    if (!snap.empty) return showMessage("Username already taken", false);
+    if (!uname) return showMessage("Username required", false);
 
-    const res = await createUserWithEmailAndPassword(auth, email.value, password.value);
+    const res = await createUserWithEmailAndPassword(
+      auth,
+      email.value,
+      password.value
+    );
+
+    // NOW user is authenticated → rules allow write
     await setDoc(doc(db, "users", res.user.uid), {
+      uid: res.user.uid,
       username: uname,
       online: true,
       createdAt: Date.now()
     });
 
     showMessage("Signup successful!", true);
-    setTimeout(() => { location.href = "index.html"; }, 1200);
+    setTimeout(() => {
+      location.href = "index.html";
+    }, 1000);
+
   } catch (err) {
     showMessage(err.message, false);
   }
