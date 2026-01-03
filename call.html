@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Callixia Call</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="call-body">
+
+<video id="remote" autoplay></video>
+<video id="local" autoplay muted class="local"></video>
+
+<div class="call-top glass">
+    <img src="logo.png" alt="Callixia Logo" class="call-logo">
+  <span id="caller">Calling…</span>
+  <span id="time">00:00</span>
+</div>
+
+<div class="controls glass">
+  <button id="mute">🎤</button>
+  <button id="video">📷</button>
+  <button id="end">❌</button>
+</div>
+<audio src="ringtone" loop>
+    <source src="ringtone.mp3" type="audio/mpeg">
+</audio>
+
+<script type="module" src="call.js"></script>
+</body>
+</html>
