@@ -1,3 +1,4 @@
+
 /* ================= RESET ================= */
 * {
   margin: 0;
@@ -6,48 +7,48 @@
   font-family: 'Poppins', sans-serif;
 }
 
-/* ================= ROOT COLORS ================= */
+/* ================= COLORS ================= */
 :root {
   --bg-dark: #050816;
   --bg-blue: #0b1026;
   --accent: #1e90ff;
-  --accent-glow: rgba(30, 144, 255, 0.4);
+  --accent-glow: rgba(30,144,255,0.3);
   --text-main: #ffffff;
   --text-muted: #aab4ff;
-  --glass-bg: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-bg: rgba(255,255,255,0.08);
+  --glass-border: rgba(255,255,255,0.15);
 }
 
 /* ================= BODY ================= */
-html, body {
-  height: 100%;
-}
-
-body {
-  background: linear-gradient(135deg, var(--bg-dark), var(--bg-blue));
+body, html {
+  width: 100%;
+  min-height: 100%;
+  background: linear-gradient(135deg,var(--bg-dark),var(--bg-blue));
   color: var(--text-main);
 }
 
 /* ================= SPLASH SCREEN ================= */
 .splash-logo {
-  width: clamp(120px, 30vw, 200px);
-  height: clamp(120px, 30vw, 200px);
+  width: 40vw;
+  max-width: 200px;
+  min-width: 120px;
+  height: auto;
   background: url('logo.png') no-repeat center/contain;
-  animation: scaleLogo 4.5s ease forwards;
+  animation: scaleLogo 4s ease forwards;
+  margin: auto;
 }
 
 @keyframes scaleLogo {
-  0% {
-    transform: scale(0.5);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.08);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+body > .splash-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 /* ================= AUTH BODY ================= */
@@ -56,38 +57,28 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 16px;
 }
 
 /* ================= GLASS BOX ================= */
 .glass-box {
   width: 100%;
-  max-width: 380px;
+  max-width: 360px;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-radius: 20px;
-  padding: 32px 26px;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
+  border-radius: 16px;
+  padding: 28px 20px;
   text-align: center;
-  animation: fadeUp 0.8s ease;
-}
-
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  box-shadow: 0 0 30px rgba(0,0,0,0.3);
 }
 
 /* ================= LOGO ================= */
 .auth-logo img {
-  width: clamp(70px, 18vw, 100px);
+  width: 25vw;
+  max-width: 90px;
+  min-width: 60px;
   margin-bottom: 14px;
 }
 
@@ -102,13 +93,12 @@ body {
 /* ================= INPUTS ================= */
 .glass-box input {
   width: 100%;
-  padding: 13px 14px;
-  margin-bottom: 14px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
   border-radius: 10px;
   border: 1px solid var(--glass-border);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255,255,255,0.05);
   color: var(--text-main);
-  outline: none;
   font-size: 0.95rem;
 }
 
@@ -119,52 +109,55 @@ body {
 .glass-box input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 8px var(--accent-glow);
+  outline: none;
 }
 
-/* ================= BUTTON ================= */
+/* ================= BUTTONS ================= */
 .glass-box button {
   width: 100%;
   padding: 13px;
   border-radius: 10px;
   border: none;
-  background: linear-gradient(135deg, #1e90ff, #0077ff);
+  background: linear-gradient(135deg,#1e90ff,#0077ff);
   color: #fff;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   margin-top: 6px;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 
 .glass-box button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 0 15px var(--accent-glow);
+  box-shadow: 0 0 10px var(--accent-glow);
 }
 
 /* ================= LINKS ================= */
 .link {
-  margin-top: 16px;
+  margin-top: 14px;
   font-size: 0.9rem;
   color: var(--text-muted);
 }
 
 .link a {
   color: var(--accent);
-  text-decoration: none;
   font-weight: 500;
+  text-decoration: none;
 }
 
 .link a:hover {
   text-decoration: underline;
 }
 
-/* ================= SMALL SCREENS ================= */
-@media (max-width: 360px) {
+/* ================= MOBILE ADJUSTMENTS ================= */
+@media (max-width: 400px) {
   .glass-box {
-    padding: 26px 20px;
+    padding: 22px 14px;
   }
-
   .glass-box h1 {
     font-size: 1.25rem;
+  }
+  .auth-logo img {
+    width: 28vw;
   }
 }
