@@ -42,7 +42,7 @@ window.signup = async () => {
 
     showMessage("Signup successful!", true);
     setTimeout(() => {
-      location.href = "index.html";
+      location.href = "dashboard.html";
     }, 1000);
 
   } catch (err) {
@@ -54,7 +54,7 @@ window.login = async () => {
   try {
     await signInWithEmailAndPassword(auth, email.value, password.value);
     showMessage("Login successful!", true);
-    setTimeout(() => { location.href = "index.html"; }, 800);
+    setTimeout(() => { location.href = "dashboard.html"; }, 800);
   } catch (err) {
     showMessage("Invalid email or password", false);
   }

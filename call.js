@@ -9,18 +9,23 @@ import {
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// Get URL params
+// -----------------------
+// GET URL PARAMETERS
+// -----------------------
 const params = new URLSearchParams(location.search);
 const callId = params.get("callId");
-const role = params.get("role");
+const role = params.get("role"); // "caller" or "receiver"
 
-// Elements
+// -----------------------
+// ELEMENTS
+// -----------------------
 const localVideo = document.getElementById("local");
 const remoteVideo = document.getElementById("remote");
 const muteBtn = document.getElementById("mute");
 const videoBtn = document.getElementById("video");
 const endBtn = document.getElementById("end");
 const timeEl = document.getElementById("time");
+const ringtone = document.getElementById("ringtone");
 
 let localStream;
 let muted = false;
@@ -28,7 +33,9 @@ let videoOff = false;
 let seconds = 0;
 let callTimer;
 
-// --- Start Call Timer ---
+// -----------------------
+// TIMER
+// -----------------------
 function startTimer() {
   callTimer = setInterval(() => {
     seconds++;
@@ -38,28 +45,28 @@ function startTimer() {
   }, 1000);
 }
 
-// --- Initialize Local Stream ---
+// -----------------------
+// INIT LOCAL STREAM
+// -----------------------
 async function initStream() {
   localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
   localVideo.srcObject = localStream;
 }
 
-// --- Setup WebRTC PeerConnection ---
-const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+// -----------------------
+// SETUP PEER CONNECTION
+// -----------------------
+const pc = new RTCPeerConnection({
+  iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+});
 
+// Display remote stream
 pc.ontrack = e => {
   remoteVideo.srcObject = e.streams[0];
 };
 
-// Add local tracks
-await initStream();
-localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-
-// References
-const callRef = doc(db, "calls", callId);
+// ICE Candidate handling
 const iceRef = collection(db, "signals", callId, "candidates");
-
-// --- ICE Candidate Handling ---
 pc.onicecandidate = e => {
   if (e.candidate) addDoc(iceRef, e.candidate.toJSON());
 };
@@ -72,33 +79,61 @@ onSnapshot(iceRef, snap => {
   });
 });
 
-// --- Caller vs Receiver Logic ---
+// -----------------------
+// CALL LOGIC
+// -----------------------
+const callRef = doc(db, "calls", callId);
+
 if (role === "caller") {
+  // Caller creates offer
+  await initStream();
+  localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
-  await updateDoc(callRef, { offer });
+  await updateDoc(callRef, { offer, status: "calling" });
 
-  // Listen for answer (call picked)
+  // Listen for answer
   onSnapshot(callRef, snap => {
     const data = snap.data();
     if (data.answer) {
       pc.setRemoteDescription(data.answer);
-      if (!callTimer) startTimer(); // Start timer only after pick
+      if (!callTimer) startTimer(); // start timer after receiver picks
     }
   });
 
 } else {
-  const snap = await getDoc(callRef);
-  await pc.setRemoteDescription(snap.data().offer);
+  // Receiver logic
+  // Play ringtone until call is answered
+  ringtone.play().catch(() => console.log("Ringtone blocked"));
 
+  const snap = await getDoc(callRef);
+  const offer = snap.data().offer;
+
+  // Init local stream first
+  await initStream();
+  localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+  // Set remote description (caller offer)
+  await pc.setRemoteDescription(offer);
+
+  // Create answer
   const answer = await pc.createAnswer();
   await pc.setLocalDescription(answer);
+
+  // Update Firestore with answer
   await updateDoc(callRef, { answer, status: "active" });
 
-  startTimer(); // Start timer immediately after picking call
+  // Stop ringtone after pick
+  ringtone.pause();
+
+  // Start timer
+  startTimer();
 }
 
-// --- Controls ---
+// -----------------------
+// CONTROLS
+// -----------------------
 muteBtn.onclick = () => {
   muted = !muted;
   localStream.getAudioTracks()[0].enabled = !muted;
@@ -122,6 +157,6 @@ endBtn.onclick = async () => {
   // Stop timer
   clearInterval(callTimer);
 
-  // Redirect back to dashboard
-  location.href = "index.html";
+  // Redirect
+  location.href = "dashboard.html";
 };
